@@ -1,0 +1,36 @@
+---
+- name: Install CloudWatch agent
+  hosts: aws
+  tasks:
+
+
+    - name: Create Directory for Downloading Cloudwatch Agent .zip
+      file:
+        path: /opt/aws/amazon-cloudwatch-zip/
+        state: directory
+        recurse: no
+
+    - name: Install unzip
+      yum: pkg=unzip state=present
+
+
+    - name: Download Latest Version of Amazon Cloudwatch Agent
+      get_url:
+        url: "https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip"
+        dest: /opt/aws/amazon-cloudwatch-zip/AmazonCloudWatchAgent.zip
+
+
+    - name: Unzip Cloudwatch Download File
+      unarchive:
+        remote_src: yes
+        src: /opt/aws/amazon-cloudwatch-zip/AmazonCloudWatchAgent.zip
+        dest: /opt/aws/amazon-cloudwatch-zip/
+      ignore_errors: yes
+
+
+
+
+    - name: Execute the Installation Script
+      command: /opt/aws/amazon-cloudwatch-zip/install.sh
+      args:
+        chdir: /opt/aws/amazon-cloudwatch-zip
